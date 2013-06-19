@@ -23,7 +23,15 @@ class Opro::Oauth::ClientApp < CouchRest::Model::Base
     view :by_app_id
     view :by_app_id_and_secret
     view :by_app_id_and_user_id
-    view :by_id_and_user_id
+
+    view :by_id_and_user_id, :map => "
+      function(doc) {
+        if (doc['type'] == 'Opro::Oauth::ClientApp' && doc['user_id']) {
+          emit([doc['_id'], doc['user_id']], 1);
+        }
+      }
+    ", :reduce => :sum
+
   end
 
   def self.find_by_client_id(client_id)
