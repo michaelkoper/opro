@@ -3,7 +3,6 @@ class Opro::Oauth::ClientApp < CouchRest::Model::Base
   property :name, String
   property :app_id, String
   property :app_secret, String
-  property :permissions, String
   property :user_id, String
   property :permissions, Hash
 
@@ -14,7 +13,6 @@ class Opro::Oauth::ClientApp < CouchRest::Model::Base
   validates  :name,   :uniqueness => true
 
   # alias_attribute :client_id, :app_id
-
   # alias_attribute :client_secret, :app_secret
   # alias_attribute :secret,        :app_secret
 
