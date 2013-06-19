@@ -44,7 +44,7 @@ class Opro::Oauth::AuthController < OproController
   def user_granted_access_before?(user, params)
     @client_app ||= Opro::Oauth::ClientApp.find_by_app_id(params[:client_id])
     return false if user.blank? || @client_app.blank?
-    Opro::Oauth::AuthGrant.where(:application_id => @client_app.id, :user_id => user.id).present?
+    Opro::Oauth::AuthGrant.find_by_user_id_and_application_id([@client_app.id, user.id]).present?
   end
 
   # Verifying that a post was made from our own site, indicating a user confirmed via form

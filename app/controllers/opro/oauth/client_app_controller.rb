@@ -39,6 +39,6 @@ class Opro::Oauth::ClientAppController < OproController
   end
 
   def client_app
-    Opro::Oauth::ClientApp.where(id: params[:id], user_id: current_user.id).first
+    Opro::Oauth::ClientApp.find_by_id_and_user_id([params[:id], current_user.id])
   end
 end

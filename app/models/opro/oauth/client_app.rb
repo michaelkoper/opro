@@ -21,6 +21,7 @@ class Opro::Oauth::ClientApp < CouchRest::Model::Base
   design do
     view :by_app_id
     view :by_app_id_and_secret
+    view :by_app_id_and_user_id
   end
 
 
