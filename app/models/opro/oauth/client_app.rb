@@ -19,6 +19,7 @@ class Opro::Oauth::ClientApp < CouchRest::Model::Base
   alias_attribute :secret,        :app_secret
 
   design do
+    view :by_user_id
     view :by_app_id
     view :by_app_id_and_secret
     view :by_app_id_and_user_id
