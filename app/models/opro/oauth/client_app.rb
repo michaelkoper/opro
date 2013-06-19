@@ -4,7 +4,7 @@ class Opro::Oauth::ClientApp < CouchRest::Model::Base
   property :app_id, String
   property :app_secret, String
   property :permissions, String
-  property :user_id, Integer
+  property :user_id, String
   property :permissions, Hash
 
   timestamps!
