@@ -13,10 +13,10 @@ class Opro::Oauth::ClientApp < CouchRest::Model::Base
   validates  :app_id, :uniqueness => true
   validates  :name,   :uniqueness => true
 
-  alias_attribute :client_id, :app_id
+  # alias_attribute :client_id, :app_id
 
-  alias_attribute :client_secret, :app_secret
-  alias_attribute :secret,        :app_secret
+  # alias_attribute :client_secret, :app_secret
+  # alias_attribute :secret,        :app_secret
 
   design do
     view :by_user_id
@@ -60,12 +60,12 @@ class Opro::Oauth::ClientApp < CouchRest::Model::Base
     generate_unique_app_id
   end
 
-  # Copy paste from active support
-  def alias_attribute(new_name, old_name)
-    module_eval <<-STR, __FILE__, __LINE__ + 1
-      def #{new_name}; self.#{old_name}; end          # def subject; self.title; end
-      def #{new_name}?; self.#{old_name}?; end        # def subject?; self.title?; end
-      def #{new_name}=(v); self.#{old_name} = v; end  # def subject=(v); self.title = v; end
-    STR
-  end
+  # alias_attributes
+  def client_id; self.app_id; end
+  def client_id=(v); self.app_id = v; end
+  def client_secret; self.app_secret; end
+  def client_secret=(v); self.app_secret = v; end
+  def secret; self.app_secret; end
+  def secret=(v); self.app_secret = v; end
+
 end

@@ -19,7 +19,7 @@ class Opro::Oauth::AuthGrant < CouchRest::Model::Base
 
   before_create :refresh
 
-  alias_attribute :token, :access_token
+  # alias_attribute :token, :access_token
 
   design do
     view :by_access_token
@@ -29,6 +29,9 @@ class Opro::Oauth::AuthGrant < CouchRest::Model::Base
     view :by_user_id_and_application_id
     view :by_refresh_token_and_application_id
   end
+
+  def token; self.access_token; end
+  def token=(v); self.access_token = v; end
 
   def can?(value)
     HashWithIndifferentAccess.new(permissions)[value]
@@ -138,12 +141,4 @@ class Opro::Oauth::AuthGrant < CouchRest::Model::Base
     self.refresh_token = unique_token_for(:refresh_token)
   end
 
-  # Copy paste from active support
-  def alias_attribute(new_name, old_name)
-    module_eval <<-STR, __FILE__, __LINE__ + 1
-      def #{new_name}; self.#{old_name}; end          # def subject; self.title; end
-      def #{new_name}?; self.#{old_name}?; end        # def subject?; self.title?; end
-      def #{new_name}=(v); self.#{old_name} = v; end  # def subject=(v); self.title = v; end
-    STR
-  end
 end
