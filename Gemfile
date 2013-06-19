@@ -22,6 +22,8 @@ end
 
 gem "rails", rails
 
+gem 'couchrest_model', git: 'https://github.com/samlown/couchrest_model.git'
+
 gem 'kramdown' # pure ruby markdown parser
 
 group :development, :test do

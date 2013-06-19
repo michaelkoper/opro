@@ -1,12 +1,17 @@
-class Opro::Oauth::AuthGrant < ActiveRecord::Base
+class Opro::Oauth::AuthGrant < CouchRest::Model::Base
 
-  self.table_name = :opro_auth_grants
+  property :code, String
+  property :access_token, String
+  property :refresh_token, String
+  property :access_token_expires_at, DateTime
+  property :permissions, Hash
+
+  timestamps!
 
   belongs_to :user
   belongs_to :client_application, :class_name => "Opro::Oauth::ClientApp", :foreign_key => "application_id"
   belongs_to :application,        :class_name => "Opro::Oauth::ClientApp", :foreign_key => "application_id"
   belongs_to :client_app,         :class_name => "Opro::Oauth::ClientApp", :foreign_key => "application_id"
-
 
   validates :application_id, :uniqueness => {:scope => :user_id, :message => "Application is already authorized for this user"}, :presence => true
   validates :code,           :uniqueness => true
@@ -16,9 +21,14 @@ class Opro::Oauth::AuthGrant < ActiveRecord::Base
 
   alias_attribute :token, :access_token
 
-  serialize :permissions, Hash
-
-  # attr_accessible :code, :access_token, :refresh_token, :access_token_expires_at, :permissions, :user_id, :user, :application_id, :application
+  design do
+    view :by_access_token
+    view :by_code
+    view :by_refresh_token
+    view :by_code_and_application_id
+    view :by_user_id_and_application_id
+    view :by_refresh_token_and_application_id
+  end
 
   def can?(value)
     HashWithIndifferentAccess.new(permissions)[value]
@@ -40,7 +50,8 @@ class Opro::Oauth::AuthGrant < ActiveRecord::Base
   end
 
   def self.find_for_token(token)
-    self.where(:access_token => token).includes(:user, :client_application).first
+    # self.where(:access_token => token).includes(:user, :client_application).first
+    find_by_access_token(token)
   end
 
   def self.find_user_for_token(token)
@@ -49,7 +60,7 @@ class Opro::Oauth::AuthGrant < ActiveRecord::Base
 
   def self.find_by_code_app(code, app)
     app_id = app.is_a?(Integer) ? app : app.id
-    auth_grant = self.where("code = ? AND application_id = ?", code, app_id).first
+    find_by_code_and_application_id(code, app_id)
   end
 
   # turns array of permissions into a hash
@@ -60,7 +71,7 @@ class Opro::Oauth::AuthGrant < ActiveRecord::Base
 
   def self.find_or_create_by_user_app(user, app)
     app_id = app.is_a?(Integer) ? app : app.id
-    auth_grant  =   self.where(:user_id  => user.id, :application_id => app_id).first
+    auth_grant = find_by_user_id_and_application_id(user.id, app_id)
     auth_grant  ||= begin
       auth_grant                = self.new
       auth_grant.user_id        = user.id
@@ -75,7 +86,7 @@ class Opro::Oauth::AuthGrant < ActiveRecord::Base
   end
 
   def self.find_by_refresh_app(refresh_token, application_id)
-    self.where("refresh_token = ? AND application_id = ?", refresh_token, application_id).first
+    find_by_refresh_token_and_application_id(refresh_token, application_id)
   end
 
   # generates tokens, expires_at and saves
@@ -94,7 +105,7 @@ class Opro::Oauth::AuthGrant < ActiveRecord::Base
   # used to guarantee that we are generating unique codes, access_tokens and refresh_tokens
   def unique_token_for(field, secure_token  = SecureRandom.hex(16))
     raise "bad field" unless self.respond_to?(field)
-    auth_grant = self.class.where(field => secure_token).first
+    auth_grant = self.class.send("find_by_#{field}", secure_token)
     return secure_token if auth_grant.blank?
     unique_token_for(field)
   end
