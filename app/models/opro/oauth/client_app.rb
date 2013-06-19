@@ -22,8 +22,8 @@ class Opro::Oauth::ClientApp < CouchRest::Model::Base
     view :by_app_id
     view :by_app_id_and_secret
     view :by_app_id_and_user_id
+    view :by_id_and_user_id
   end
-
 
   def self.find_by_client_id(client_id)
     find_by_app_id(client_id)
