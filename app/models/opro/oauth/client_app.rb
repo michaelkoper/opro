@@ -34,6 +34,8 @@ class Opro::Oauth::ClientApp < CouchRest::Model::Base
 
   end
 
+  # alias_attributes
+
   def self.find_by_client_id(client_id)
     find_by_app_id(client_id)
   end
@@ -56,5 +58,14 @@ class Opro::Oauth::ClientApp < CouchRest::Model::Base
     client_app = find_by_app_id(app_id)
     return app_id if client_app.blank?
     generate_unique_app_id
+  end
+
+  # Copy paste from active support
+  def alias_attribute(new_name, old_name)
+    module_eval <<-STR, __FILE__, __LINE__ + 1
+      def #{new_name}; self.#{old_name}; end          # def subject; self.title; end
+      def #{new_name}?; self.#{old_name}?; end        # def subject?; self.title?; end
+      def #{new_name}=(v); self.#{old_name} = v; end  # def subject=(v); self.title = v; end
+    STR
   end
 end
