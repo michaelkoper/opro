@@ -1,10 +1,11 @@
 class Opro::Oauth::ClientApp < CouchRest::Model::Base
+  use_database :oauths
 
   property :name, String
   property :app_id, String
   property :app_secret, String
   property :user_id, String
-  property :permissions, Hash
+  property :permissions, Hash, default: {}
 
   timestamps!
 
@@ -19,7 +20,7 @@ class Opro::Oauth::ClientApp < CouchRest::Model::Base
   design do
     view :by_user_id
     view :by_app_id
-    view :by_app_id_and_secret
+    view :by_app_id_and_app_secret
     view :by_app_id_and_user_id
 
     view :by_id_and_user_id, :map => "
@@ -39,7 +40,7 @@ class Opro::Oauth::ClientApp < CouchRest::Model::Base
   end
 
   def self.authenticate(app_id, app_secret)
-    find_by_app_id_and_secret([app_id, app_secret])
+    find_by_app_id_and_app_secret([app_id, app_secret])
   end
 
   def self.create_with_user_and_name(user, name)

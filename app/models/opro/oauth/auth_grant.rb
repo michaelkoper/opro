@@ -1,4 +1,5 @@
 class Opro::Oauth::AuthGrant < CouchRest::Model::Base
+  use_database :oauths
 
   property :code, String
   property :access_token, String
@@ -63,7 +64,7 @@ class Opro::Oauth::AuthGrant < CouchRest::Model::Base
 
   def self.find_by_code_app(code, app)
     app_id = app.is_a?(Integer) ? app : app.id
-    find_by_code_and_application_id(code, app_id)
+    find_by_code_and_application_id([code, app_id])
   end
 
   # turns array of permissions into a hash
@@ -74,7 +75,7 @@ class Opro::Oauth::AuthGrant < CouchRest::Model::Base
 
   def self.find_or_create_by_user_app(user, app)
     app_id = app.is_a?(Integer) ? app : app.id
-    auth_grant = find_by_user_id_and_application_id(user.id, app_id)
+    auth_grant = find_by_user_id_and_application_id([user.id, app_id])
     auth_grant  ||= begin
       auth_grant                = self.new
       auth_grant.user_id        = user.id
