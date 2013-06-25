@@ -1,3 +1,5 @@
+This is a working port of [opro](https://github.com/opro/opro) working with [Couchrest Model](https://github.com/couchrest/couchrest_model). This gem isnt production ready yet so don't use it!
+
 ## oPRO
 
 A production ready Rails Engine that turns your app into an [OAuth2](http://oauth.net/2/) Provider.
